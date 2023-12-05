@@ -16,9 +16,11 @@ function love.load()
 	for i=1,19 do
 		bucko[i]=love.graphics.newImage(string.format("Untitled%d.png",i))
 	end
+	title=love.graphics.newImage("title.png")
+	gover=love.graphics.newImage("gameover.png")
 	offset=bucko[1]:getHeight() / 2
 	since=love.timer.getTime()
-
+	firsttime=1
 	setup()
 	love.window.setVSync(1)
 end
