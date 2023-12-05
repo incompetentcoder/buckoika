@@ -1,4 +1,10 @@
 function love.load()
+	love.filesystem.setIdentity("buckoika")
+	if love.filesystem.getInfo("score") then
+		hiscore = love.filesystem.read("score")
+	else
+		love.filesystem.write("score","0\n")
+	end
 	sizes={17,23,30,38,47,57,68,80,93,107,122,138,155,173,192,212}
 	invertedsizes={}
 	for a,b in ipairs(sizes) do
@@ -32,6 +38,14 @@ function love.keypressed(key,scancode,isrepeat)
 		gameover=1
 	end
 	if key == "escape" then
+		if score then
+			if hiscore then
+				if score>tonumber(hiscore) then
+					hiscore=score
+				end
+			end
+		end
+		love.filesystem.write("score",tostring(hiscore) .. "\n")
 		love.event.quit(0)
 	end
 end
@@ -48,9 +62,9 @@ function love.update(dt)
 	for ii,i in ipairs(ballstoremove) do
 	--	print(i[1],i[2],Balls[i[1]])
 		if Balls[i[1]][i[2]] then
+			score=score+invertedsizes[Balls[i[1]][i[2]].shape:getRadius()]
 			Balls[i[1]][i[2]].body:destroy()
 			Balls[i[1]][i[2]]=nil
-			score=score+1
 		end
 	end
 	ballstoremove={}
@@ -138,15 +152,14 @@ function setup()
 	ballstocreate={}
 	ballstoremove={}
 	if score then
-	    if hiscore then
+		if hiscore then
 			if score>hiscore then
 				hiscore=score
 			end
-	    else
-			hiscore=score
-	    end
-	else
-	    hiscore=0
+		end
+	end
+	if hiscore == nil then
+		hiscore = 0
 	end
 	score=0
 	gameover=0
