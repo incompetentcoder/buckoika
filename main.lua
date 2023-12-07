@@ -13,7 +13,7 @@ function love.load()
 	startsize=17
 	balls=1
 	bucko={}
-	for i=1,19 do
+	for i=1,15 do
 		bucko[i]=love.graphics.newImage(string.format("Untitled%d.png",i))
 	end
 	title=love.graphics.newImage("title.png")
