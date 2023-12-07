@@ -21,13 +21,21 @@ function love.load()
 	offset=bucko[1]:getHeight() / 2
 	since=love.timer.getTime()
 	firsttime=1
-	setup()
 	love.window.setVSync(1)
 end
 
 function love.mousepressed(x,y,button,istouch,presses)
+	if firsttime==1 or gameover==1 then
+		firsttime=0
+		gameover=0
+		if World then 
+			World:destroy()
+		end
+		setup()
+		return
+	end
 	if button==1 then
-		if love.timer.getTime() - since > 1 then
+		if love.timer.getTime() - since > 0.5 then
 			createball(pos,50,nextball)
 			nextball=sizes[math.random(3)]
 			since=love.timer.getTime()
@@ -36,8 +44,17 @@ function love.mousepressed(x,y,button,istouch,presses)
 end
 	
 function love.keypressed(key,scancode,isrepeat)
+	if firsttime==1 or gameover==1 then
+		firsttime=0
+		gameover=0
+		if World then
+			World:destroy()
+		end
+		setup()
+	end
 	if key == "r" then
-		gameover=1
+		World:destroy()
+		setup()
 	end
 	if key == "escape" then
 		if score then
@@ -54,6 +71,9 @@ end
 
 function love.update(dt)
 -- Update the physics World with the specified time step (dt)
+	if gameover==1 or firsttime==1 then
+		return
+	end
 	World:update(dt)
 	pos=love.mouse.getX()
 	if pos < 250 then
@@ -76,19 +96,23 @@ function love.update(dt)
 	ballstocreate={}
 	for ii,i in pairs(Balls) do
 		for iii,iiii in pairs(i) do
-			if iiii.body:getY() > 700 or iiii.body:getY() < 40 then
+			if iiii.body:getY() > 700 or iiii.body:getY() < 20 then
 				gameover=1
-				break
+				return
 			end
 		end
-	end
-	if gameover == 1 then
-		World:destroy()
-		setup()
 	end
 end
 
 function love.draw()
+	if gameover==1 then
+		love.graphics.draw(gover,0,0)
+		return
+	end
+	if firsttime==1 then
+		love.graphics.draw(title,0,0)
+		return
+	end
 	for i=1,19 do
 		if Balls[i] then
 			local img=bucko[i]
@@ -155,7 +179,7 @@ function setup()
 	ballstoremove={}
 	if score then
 		if hiscore then
-			if score>hiscore then
+			if score>tonumber(hiscore) then
 				hiscore=score
 			end
 		end
